@@ -80,12 +80,13 @@ app.post('/api/upsert/:table', (req, res) => {
     
     const updateChain = keys
         .filter(key => key !== 'id')
-        .map(key => `${key} = VALUES(${key})`)
+        .map(key => `${key} = new_data.${key}`)
         .join(', ');
 
     const sql = `
         INSERT INTO ${table} (${keys.join(', ')}) 
         VALUES (${placeholders}) 
+        AS new_data
         ON DUPLICATE KEY UPDATE ${updateChain}
     `;
 
