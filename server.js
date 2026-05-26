@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // env
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -102,6 +102,4 @@ app.post('/api/availability/toggle/:id', (req, res) => {
 
 // using env or 3000 by default
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`>>> Сервер запущен на порту ${PORT}`);
-});
+module.exports = app;
