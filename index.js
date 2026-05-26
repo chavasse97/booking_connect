@@ -92,8 +92,14 @@ app.post('/api/upsert/:table', (req, res) => {
 
     db.query(sql, values, (err, result) => {
         if (err) {
-            console.error(err);
-            return res.status(500).send("Ошибка базы данных");
+            console.error("Детальная ошибка MySQL:", err);
+            // Отправляем подробный JSON в браузер вместо одной фразы
+            return res.status(500).json({
+                error: "Ошибка MySQL",
+                code: err.code,             // Код ошибки (например, ER_BAD_FIELD_ERROR)
+                sqlMessage: err.sqlMessage, // Что именно не понравилось базе данных
+                sql: err.sql                // Итоговый SQL-запрос, который не выполнился
+            });
         }
         res.redirect('/#' + table); 
     });
