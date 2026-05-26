@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Management System</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f4f7f6; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; background: #ddd; border: none; border-radius: 5px; }
+        .tab-btn.active { background: #007bff; color: white; }
+        .content { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .content.active { display: block; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; max-width: 600px; }
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button.submit-btn { grid-column: span 2; background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<h1>Management</h1>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="openTab('users')">Users</button>
+    <button class="tab-btn" onclick="openTab('properties')">Hotels</button>
+    <button class="tab-btn" onclick="openTab('roomtypes')">Roomtypes</button>
+    <button class="tab-btn" onclick="openTab('rooms')">Rooms</button>
+    <button class="tab-btn" onclick="openTab('bookings')">Bookings</button>
+    <button class="tab-btn" onclick="openTab('availability')">Availability</button>
+</div>
+
+<!-- users -->
+<div id="users" class="content active">
+    <h3>Add</h3>
+    <form action="/api/upsert/users" method="POST">
+        <input type="number" name="id" placeholder="ID">
+        <input type="text" name="name" placeholder="Имя" required>
+        <input type="text" name="surname" placeholder="Фамилия" required>
+        <input type="text" name="phone" placeholder="Телефон" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <button type="submit" class="submit-btn">Send</button>
+    </form>
+    <table id="table-users"><thead><tr><th>ID</th><th>Имя</th><th>Фамилия</th><th>Телефон</th><th>Email</th></tr></thead><tbody></tbody></table>
+</div>
+
+<!-- Hotels -->
+<div id="properties" class="content">
+    <h3>Add</h3>
+    <form action="/api/upsert/properties" method="POST">
+        <input type="number" name="id" placeholder="ID">
+        <input type="text" name="name" placeholder="Название отеля" required>
+        <input type="text" name="city" placeholder="Город" required>
+        <input type="text" name="address" placeholder="Адрес" required>
+        <input type="text" name="description" placeholder="Описание" required>
+        <button type="submit" class="submit-btn">Send</button>
+    </form>
+    <table id="table-properties"><thead><tr><th>ID</th><th>Название</th><th>Город</th><th>Адрес</th><th>Описание</th></tr></thead><tbody></tbody></table>
+</div>
+
+<!-- Bookings -->
+<div id="bookings" class="content">
+    <h3>New booking</h3>
+    <form action="/api/upsert/bookings" method="POST">
+        <input type="number" name="id" placeholder="ID">
+        <input type="number" name="user_id" placeholder="ID пользователя" required>
+        <input type="number" name="room_id" placeholder="ID номера(комнаты)" required>
+        <input type="date" name="checkindate" required>
+        <input type="date" name="checkoutdate" required>
+        <input type="text" name="status" placeholder="Статус (Confirmed/Pending)" required>
+        <button type="submit" class="submit-btn">Book</button>
+    </form>
+    <table id="table-bookings"><thead><tr><th>ID</th><th>User ID</th><th>Room ID</th><th>Заезд</th><th>Выезд</th><th>Статус</th></tr></thead><tbody></tbody></table>
+</div>
+
+
+<!-- rt -->
+<div id="roomtypes" class="content">
+    <h3>Add roomtype</h3>
+    <form action="/api/upsert/roomtypes" method="POST">
+        <input type="number" name="id" placeholder="ID">
+        <input type="text" name="title" placeholder="Название класса" required>
+        <input type="number" step="0.01" name="price" placeholder="Цена за ночь" required>
+        <input type="number" name="capacity" placeholder="Вместимость (чел)" required>
+        <input type="number" name="property_id" placeholder="ID Отеля" required>
+        <button type="submit" class="submit-btn">Add</button>
+    </form>
+    <table id="table-roomtypes">
+        <thead>
+            <tr><th>ID</th><th>Название</th><th>Цена</th><th>Места</th><th>ID Отеля</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- rooms -->
+<div id="rooms" class="content">
+    <h3>Add room</h3>
+    <form action="/api/upsert/rooms" method="POST">
+        <input type="number" name="id" placeholder="ID">
+        <input type="number" name="property_id" placeholder="ID отеля" required>
+        <input type="number" name="roomtype_id" placeholder="ID класса номера" required>
+        <input type="number" name="roomnumber" placeholder="Номер комнаты" required>
+        <select name="status">
+            <option value="Available">Available</option>
+            <option value="Occupied">Occupied</option>
+            <option value="Maintenance">On maintenance</option>
+        </select>
+        <button type="submit" class="submit-btn">Add</button>
+    </form>
+    <table id="table-rooms">
+        <thead>
+            <tr><th>ID</th><th>ID отеля</th><th>Номер комнаты</th><th>Класс</th><th>Статус</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- Availability -->
+<div id="availability" class="content">
+    <h3>Availability management</h3>
+    <form action="/api/add/availability" method="POST">
+        <input type="number" name="user_id" placeholder="ID пользователя (необязательно)">
+        <input type="number" name="room_id" placeholder="ID номера" required>
+        <input type="date" name="date" required>
+        <select name="isbooked">
+            <option value="0">Available</option>
+            <option value="1">Booked</option>
+        </select>
+        <button type="submit" class="submit-btn">Send</button>
+    </form>
+    
+    <table id="table-availability">
+        <thead>
+            <tr>
+                <th>ID</th><th>User ID</th><th>Room ID</th><th>Дата</th><th>Статус</th><th>Действие</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    // for availability table
+    async function loadAvailability() {
+        const res = await fetch('/api/availability');
+        const data = await res.json();
+        const tbody = document.querySelector('#table-availability tbody');
+        
+        tbody.innerHTML = data.map(row => `
+            <tr>
+                <td>${row.id}</td>
+                <td>${row.user_id || '—'}</td>
+                <td>${row.room_id}</td>
+                <td>${new Date(row.date).toLocaleDateString()}</td>
+                <td>${row.isbooked ? '<b style="color:red">Занято</b>' : '<b style="color:green">Свободно</b>'}</td>
+                <td>
+                    <button onclick="toggleAvailability(${row.id})">Изменить статус</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // update
+    async function toggleAvailability(id) {
+        const res = await fetch(`/api/availability/toggle/${id}`, { method: 'POST' });
+        if (res.ok) {
+            loadAvailability(); // reload table
+        }
+    }
+
+</script>
+
+
+<script>
+    function openTab(tabName) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+        loadData(tabName);
+        if (tabName === 'availability') loadAvailability();
+        else loadData(tabName);
+    }
+
+    async function loadData(table) {
+        const res = await fetch(`/api/${table}`);
+        const data = await res.json();
+        const tbody = document.querySelector(`#table-${table} tbody`);
+        if (!tbody) return;
+        
+        tbody.innerHTML = data.map(row => `
+            <tr>${Object.values(row).map(v => `<td>${v}</td>`).join('')}</tr>
+        `).join('');
+    }
+
+    // load if opened
+    window.onload = () => loadData('users');
+</script>
+
+</body>
+</html>
