@@ -53,6 +53,7 @@ tables.forEach(table => {
                 LEFT JOIN bookings b ON r.id = b.room_id 
                     AND '${today}' BETWEEN b.checkindate AND b.checkoutdate
                     AND b.status != 'Cancelled'
+                    AND b.status != 'Pending'
             `;
         }
 
